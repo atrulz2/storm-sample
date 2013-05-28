@@ -5,6 +5,7 @@ import backtype.storm.topology.TopologyBuilder
 object SampleTopology {
 
 	def main(args: Array[String]): Unit = {
+		val stopWords = Array("a", "the", "not", "t", "co", "http", "to", "of", "my", "rt", "it", "he", "and", "at", "in", "his", "if", "s", "for", "on", "is", "are", "you")
 		val kw = List("obama", "barack", "potus", "white house")
 		val builder = new TopologyBuilder
 		builder.setSpout("spout.twitter", new TwitterStreamingSpout(kw), 1)
@@ -13,7 +14,7 @@ object SampleTopology {
 		builder.setBolt("bolt.url.parser", new UrlParser, 4).shuffleGrouping("spout.twitter")
 		builder.setBolt("bolt.url.counter", new Counter(10), 1).shuffleGrouping("bolt.url.parser")
 		builder.setBolt("bolt.word.parser", new WordParser, 4).shuffleGrouping("spout.twitter")
-		builder.setBolt("bolt.word.filter", new WordFilter(Array("a", "the", "not")), 4).shuffleGrouping("bolt.word.parser")
+		builder.setBolt("bolt.word.filter", new WordFilter(stopWords), 4).shuffleGrouping("bolt.word.parser")
 		builder.setBolt("bolt.word.counter", new Counter(10), 1).shuffleGrouping("bolt.word.filter")
 
 		val conf = new Config

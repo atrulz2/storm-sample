@@ -14,7 +14,7 @@ class WordParser extends BaseBasicBolt {
 	override def execute(input: Tuple, collector: BasicOutputCollector) = {
 		val tweet = input.getValue(0).asInstanceOf[Status]
 		for (word <- "[\\w]+".r findAllIn tweet.getText)
-			collector.emit(new Values(word))
+			collector.emit(new Values(word.toLowerCase))
 	}
 
 	override def declareOutputFields(declarer: OutputFieldsDeclarer) = declarer.declare(new Fields("word"))
